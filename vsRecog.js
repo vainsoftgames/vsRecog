@@ -6,7 +6,8 @@ class vsRecog {
 	isSetup = false;
 	
 	// Callback Functions
-	onUpdate;
+	onUpdate; // Called on final word
+	onUpdateWord; // Called on all words (interimResults needs to be `true` to work)
 	onBreakout;
 	onStart;
 	
@@ -89,6 +90,18 @@ class vsRecog {
 							this.isActivated = false;
 						}
 					}
+				}
+				else if(typeof this.onUpdateWord === 'function') {
+					// Keep track of previously detected transcript
+					if (!this.previousTranscript) {
+						this.previousTranscript = '';
+					}
+					// Determine the new part of the transcript
+					var newWords = transcript.replace(this.previousTranscript, '').trim();
+
+					// Update the previous transcript for the next comparison
+					this.previousTranscript = transcript;
+					this.onUpdateWord(newWords);
 				}
 			}
 		};
